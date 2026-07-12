@@ -5,41 +5,66 @@ export class UsersPage {
     this.page = page;
 
     this.usersMenu = page.getByRole('menuitem', { name: 'Users' });
-
     this.createButton = page.getByRole('button', { name: 'Create' });
 
     this.table = page.locator('table');
 
-    this.rows = page.locator('tbody tr');
+    // для массового удаления
+    this.selectAllCheckbox = page.locator('thead input[type="checkbox"]');
+    this.deleteSelectedButton = page.getByRole('button', {
+      name: /^Delete$/i,
+    });
 
-    this.emailCells = page.locator('tbody tr td:nth-child(2)');
-    this.firstNameCells = page.locator('tbody tr td:nth-child(3)');
-    this.lastNameCells = page.locator('tbody tr td:nth-child(4)');
+    this.deleteNotification = page.getByText('Element deleted');
   }
 
   async open() {
     await this.usersMenu.click();
-    await expect(this.table).toBeVisible();
+    await expect(this.page).toHaveURL(/users/);
   }
 
-  async openCreatePage() {
+  async openCreateForm() {
     await this.createButton.click();
+  }
+
+  async openUserByEmail(email) {
+    await this.page.getByRole('link', { name: email }).click();
+  }
+
+  async expectUserExists(email, firstName, lastName) {
+    const row = this.page.locator('tbody tr').filter({
+      hasText: email,
+    });
+
+    await expect(row).toContainText(firstName);
+    await expect(row).toContainText(lastName);
+  }
+
+  async expectUserNotExists(email) {
+    const row = this.page.locator('tbody tr').filter({
+      hasText: email,
+    });
+
+    await expect(row).toHaveCount(0);
   }
 
   async expectUsersTableVisible() {
     await expect(this.table).toBeVisible();
-    await expect(this.rows.first()).toBeVisible();
   }
 
-  async expectUsersDisplayed() {
-    const rowsCount = await this.rows.count();
+  async selectAllUsers() {
+    await this.selectAllCheckbox.check();
+  }
 
-    expect(rowsCount).toBeGreaterThan(0);
+  async deleteSelectedUsers() {
+    await this.deleteSelectedButton.click();
+  }
 
-    for (let i = 0; i < rowsCount; i++) {
-      await expect(this.emailCells.nth(i)).not.toBeEmpty();
-      await expect(this.firstNameCells.nth(i)).not.toBeEmpty();
-      await expect(this.lastNameCells.nth(i)).not.toBeEmpty();
-    }
+  async expectDeleteSuccess() {
+    await expect(this.deleteNotification).toBeVisible();
+  }
+
+  async expectTableIsEmpty() {
+    await expect(this.page.locator('tbody tr')).toHaveCount(0);
   }
 }

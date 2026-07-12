@@ -1,54 +1,84 @@
 import { test } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
 import { UsersPage } from '../pages/UsersPage';
-import { CreateUserPage } from '../pages/CreateUserPage';
+import { EditUserPage } from '../pages/EditUserPage';
 
 test.describe('Users', () => {
+  let usersPage;
+  let editUserPage;
+
   test.beforeEach(async ({ page }) => {
-    const loginPage = new LoginPage(page);
+    usersPage = new UsersPage(page);
+    editUserPage = new EditUserPage(page);
 
-    await loginPage.goto();
-    await loginPage.login('admin@example.com', 'password');
-
-    const usersPage = new UsersPage(page);
     await usersPage.open();
   });
 
-  test('user creation form is displayed correctly', async ({ page }) => {
-    const usersPage = new UsersPage(page);
-    const createUserPage = new CreateUserPage(page);
-
-    await usersPage.openCreatePage();
-
-    await createUserPage.expectFormVisible();
-  });
-
-  test('should create new user', async ({ page }) => {
-    const usersPage = new UsersPage(page);
-    const createUserPage = new CreateUserPage(page);
-
-    await usersPage.openCreatePage();
-
-    const user = {
-      email: `user${Date.now()}@mail.com`,
-      firstName: 'John',
-      lastName: 'Smith',
-    };
-
-    await createUserPage.createUser(user);
-
-    await createUserPage.expectSuccessNotification();
-  });
-
-  test('should display users list', async ({ page }) => {
-    const usersPage = new UsersPage(page);
-
+  test('Users list is displayed correctly', async () => {
     await usersPage.expectUsersTableVisible();
+
+    await usersPage.expectUserExists(
+      'test@test.com',
+      'Ivan',
+      'Ivanov',
+    );
   });
 
-  test('should display email, first name and last name for every user', async ({ page }) => {
-    const usersPage = new UsersPage(page);
+  test('Edit form is displayed correctly', async () => {
+    await usersPage.openUserByEmail('test@test.com');
 
-    await usersPage.expectUsersDisplayed();
+    await editUserPage.expectFormVisible();
+
+    await editUserPage.expectValues({
+      email: 'test@test.com',
+      firstName: 'Ivan',
+      lastName: 'Ivanov',
+    });
+  });
+
+  test('User can be edited', async () => {
+    await usersPage.openUserByEmail('test@test.com');
+
+    await editUserPage.editUser({
+      firstName: 'Petr',
+      lastName: 'Petrov',
+    });
+
+    await editUserPage.expectSuccess();
+
+    await editUserPage.expectValues({
+      firstName: 'Petr',
+      lastName: 'Petrov',
+    });
+  });
+
+  test('Email validation works', async () => {
+    await usersPage.openUserByEmail('test@test.com');
+
+    await editUserPage.editUser({
+      email: 'incorrect-email',
+    });
+
+    await editUserPage.expectEmailValidation();
+  });
+
+  test('User can be deleted', async () => {
+    await usersPage.openUserByEmail('test@test.com');
+
+    await editUserPage.deleteUser();
+
+    await editUserPage.expectDeleteSuccess();
+
+    await usersPage.expectUserNotExists('test@test.com');
+  });
+
+  test('All users can be deleted', async () => {
+    await usersPage.selectAllUsers();
+
+    await usersPage.deleteSelectedUsers();
+
+    await usersPage.expectDeleteSuccess();
+
+    await usersPage.expectTableIsEmpty();
   });
 });
+
