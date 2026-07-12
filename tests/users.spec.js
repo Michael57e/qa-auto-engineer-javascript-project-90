@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
-import { UsersPage } from '../pages/UsersPage';
-import { EditUserPage } from '../pages/EditUserPage';
+import { UsersPage } from './pages/UsersPage.js';
+import { CreateUserPage } from './pages/CreateUserPage.js';
+import { EditUserPage } from './pages/EditUserPage.js';
 
 test.describe('Users', () => {
   let usersPage;
