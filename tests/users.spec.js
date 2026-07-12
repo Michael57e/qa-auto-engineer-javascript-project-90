@@ -1,43 +1,54 @@
 import { test } from '@playwright/test';
-
 import { LoginPage } from '../pages/LoginPage';
 import { UsersPage } from '../pages/UsersPage';
 import { CreateUserPage } from '../pages/CreateUserPage';
 
 test.describe('Users', () => {
-  let loginPage;
-  let usersPage;
-  let createUserPage;
-
   test.beforeEach(async ({ page }) => {
-    loginPage = new LoginPage(page);
-    usersPage = new UsersPage(page);
-    createUserPage = new CreateUserPage(page);
+    const loginPage = new LoginPage(page);
 
     await loginPage.goto();
-    await loginPage.login();
+    await loginPage.login('admin@example.com', 'password');
 
+    const usersPage = new UsersPage(page);
     await usersPage.open();
-    await usersPage.clickCreate();
   });
 
-  test('User creation form is displayed correctly', async () => {
-    await createUserPage.checkFormIsVisible();
+  test('user creation form is displayed correctly', async ({ page }) => {
+    const usersPage = new UsersPage(page);
+    const createUserPage = new CreateUserPage(page);
+
+    await usersPage.openCreatePage();
+
+    await createUserPage.expectFormVisible();
   });
 
-  test('User can be created successfully', async () => {
+  test('should create new user', async ({ page }) => {
+    const usersPage = new UsersPage(page);
+    const createUserPage = new CreateUserPage(page);
+
+    await usersPage.openCreatePage();
+
     const user = {
-      email: `user${Date.now()}@test.com`,
+      email: `user${Date.now()}@mail.com`,
       firstName: 'John',
       lastName: 'Smith',
     };
 
-    await createUserPage.fillForm(user);
+    await createUserPage.createUser(user);
 
-    await createUserPage.expectDataSaved(user);
+    await createUserPage.expectSuccessNotification();
+  });
 
-    await createUserPage.save();
+  test('should display users list', async ({ page }) => {
+    const usersPage = new UsersPage(page);
 
-    await createUserPage.expectSuccessMessage();
+    await usersPage.expectUsersTableVisible();
+  });
+
+  test('should display email, first name and last name for every user', async ({ page }) => {
+    const usersPage = new UsersPage(page);
+
+    await usersPage.expectUsersDisplayed();
   });
 });
