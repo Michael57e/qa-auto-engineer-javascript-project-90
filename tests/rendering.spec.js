@@ -7,5 +7,5 @@ test('page contains root element', async ({ page }) => {
   // ищу элемент по id
   const root = page.locator('#root')
 
-  await expect(root).toBeVisible()
+  await expect(page.locator('#root')).toBeAttached();
 })

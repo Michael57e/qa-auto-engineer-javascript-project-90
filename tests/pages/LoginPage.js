@@ -16,7 +16,15 @@ export class LoginPage {
   async login(username, password) {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
+    await this.signInButton.waitFor({
+      state: 'visible',
+    });
+
     await this.signInButton.click();
+
+    await expect(this.page).not.toHaveURL(/login/);
+
+    await this.page.waitForLoadState('networkidle');
   }
 
   async expectLoginPage() {
