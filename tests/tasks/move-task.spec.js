@@ -15,16 +15,38 @@ test('user can drag and drop a task card to another column', async ({ page }) =>
   await tasksPage.goto();
   await tasksPage.expectKanbanBoard();
 
-  // Берем первую карточку из первой колонки
-  const sourceCard = page.locator('[data-rfd-draggable-id]').first();
-  // Целевая колонка (например "To Review" с droppable-id="2")
-  const targetDroppable = page.locator('[data-rfd-droppable-id="2"]');
+  const sourceColumn = page.locator('[data-rfd-droppable-id="1"]');
+  const targetColumn = page.locator('[data-rfd-droppable-id="2"]');
+
+  // Берем первую карточку именно из колонки Draft
+  const sourceCard = sourceColumn.locator('[data-rfd-draggable-id]').first();
 
   await expect(sourceCard).toBeVisible();
-  await expect(targetDroppable).toBeVisible();
+  await expect(targetColumn).toBeVisible();
 
-  // Перетаскиваем карточку во вторую колонку
-  await sourceCard.dragTo(targetDroppable);
+  const taskTitle = (
+    await sourceCard.locator('.MuiTypography-h5').innerText()
+  ).trim();
 
-//  await page.screenshot({ path: 'test-results/task-moved.png', fullPage: true });
+  // react-beautiful-dnd поддерживает доступное keyboard drag-and-drop:
+  // Space — поднять карточку, ArrowRight — перенести в следующую колонку,
+  // Space — отпустить карточку.
+  await sourceCard.focus();
+  await page.keyboard.press('Space');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Space');
+
+  const taskInTargetColumn = targetColumn.locator('.MuiCard-root', {
+    has: page.getByText(taskTitle, { exact: true }),
+  });
+
+  const taskInSourceColumn = sourceColumn.locator('.MuiCard-root', {
+    has: page.getByText(taskTitle, { exact: true }),
+  });
+
+  // Карточка должна появиться в To Review
+  await expect(taskInTargetColumn).toBeVisible({ timeout: 10000 });
+
+  // И исчезнуть из Draft
+  await expect(taskInSourceColumn).toHaveCount(0);
 });

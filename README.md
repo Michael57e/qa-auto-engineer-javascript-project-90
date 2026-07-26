@@ -1,69 +1,251 @@
-# React + Vite
+# Kanban Board — Playwright E2E Tests
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Автоматизированные end-to-end тесты для веб-приложения управления задачами «Канбан-доска».
 
-Currently, two official plugins are available:
+Проект выполнен в рамках обучения на курсе Hexlet по автоматизированному тестированию на JavaScript.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Описание
 
-## React Compiler
+Тестируемое приложение позволяет управлять пользователями, статусами задач, метками и задачами на Канбан-доске.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Автотесты написаны на JavaScript с использованием Playwright и паттерна Page Object Model.
 
-## Expanding the ESLint configuration
+## Покрытые сценарии
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Авторизация
 
-# Проект: Тестирование Канбан-доски (JS)
+- успешный вход пользователя;
+- выход из системы.
 
-Учебный проект по авто-тестированию на JavaScript веб-приложения «Канбан-доска».
+### Пользователи
 
-### Описание
+- отображение списка пользователей;
+- создание пользователя;
+- редактирование пользователя;
+- удаление одного пользователя;
+- массовое удаление пользователей.
 
-Проект создан в рамках обучения авто-тестированию на JavaScript и посвящен написанию автоматизированных тестов для приложения управления задачами.
+### Статусы задач
 
-В качестве основы используется Task Manager-приложение, предоставленное Hexlet.
+- создание статуса;
+- редактирование статуса;
+- удаление одного статуса;
+- массовое удаление статусов.
 
-### Используемые технологии:
-* JavaScript
-* Playwright
-* Vite
-* ESLint
+### Метки
 
-### Установка
+- создание метки;
+- редактирование метки;
+- удаление одной метки;
+- массовое удаление меток.
 
-Клонировать репозиторий:
+### Задачи и Канбан-доска
+
+- создание задачи;
+- редактирование задачи;
+- удаление задачи;
+- фильтрация задач;
+- перемещение карточки задачи между колонками.
+
+## Технологии
+
+- JavaScript;
+- [Playwright](https://playwright.dev/);
+- React;
+- Vite;
+- ESLint;
+- GitHub Actions.
+
+## Требования
+
+Для работы с проектом необходимы:
+
+- Node.js;
+- npm;
+- браузеры Playwright.
+
+## Установка
+
+Клонируйте репозиторий:
+
 ```
-git clone <...>
-cd <...>
+git clone https://github.com/Michael57e/qa-auto-engineer-javascript-project-90.git
+cd qa-auto-engineer-javascript-project-90
 ```
-Установить зависимости:
 
+Установите зависимости:
+
+```
 npm install
+```
 
-### Запуск проекта
+Установите браузеры Playwright:
 
-Запуск сервера разработки:
+```
+npx playwright install
+```
 
-`npm run dev`
+Для Linux/CI с системными зависимостями браузеров:
 
-После запуска приложение будет доступно по адресу:
+```
+npx playwright install --with-deps
+```
 
-`http://localhost:5173`
+## Запуск приложения
 
-### Проверка кода
+Запуск development-сервера Vite:
 
-Запуск линтера:
+```
+npm run dev
+```
 
-`npm run lint`
+После запуска приложение доступно по адресу:
 
-Структура проекта (???)
+```text
+http://localhost:5173
+```
 
-### Автор
+> При запуске Playwright сервер стартует автоматически согласно настройке `webServer` в `playwright.config.js`. Поэтому вручную запускать `npm run dev` перед тестами необязательно.
 
-Проект выполнен в рамках курса Hexlet по JavaScript.
+## Запуск тестов
+
+Запустить все E2E-тесты:
+
+```
+npx playwright test
+```
+
+Запустить тесты в Chromium:
+
+```
+npx playwright test --project=chromium
+```
+
+Запустить тесты в Firefox:
+
+```
+npx playwright test --project=firefox
+```
+
+Запустить тесты в WebKit:
+
+```
+npx playwright test --project=webkit
+```
+
+Запуск с отображением браузера:
+
+```
+npx playwright test --headed
+```
+
+Пошаговая отладка:
+
+```
+npx playwright test --debug
+```
+
+## Запуск тестов по разделам
+
+Пользователи:
+
+```
+npx playwright test tests/users/
+```
+
+Статусы задач:
+
+```
+npx playwright test tests/task-statuses/
+```
+
+Метки:
+
+```
+npx playwright test tests/labels/
+```
+
+Задачи и Канбан-доска:
+
+```
+npx playwright test tests/tasks/
+```
+
+Пример запуска одного теста в WebKit:
+
+```
+npx playwright test tests/tasks/edit-task.spec.js --project=webkit
+```
+
+## Отчёты Playwright
+
+После запуска тестов HTML-отчёт можно открыть командой:
+
+```
+npx playwright show-report
+```
+
+При повторной попытке упавшего теста Playwright сохраняет trace-файл. Его можно открыть так:
+
+```
+npx playwright show-trace path/to/trace.zip
+```
+
+## Проверка кода
+
+Запуск ESLint:
+
+```
+npm run lint
+```
+
+## CI
+
+В репозитории настроен GitHub Actions workflow:
+
+```text
+.github/workflows/playwright.yml
+```
+
+Workflow запускается при `push` и `pull request` в ветки `main` и `master`.
+
+В CI выполняются:
+
+1. установка зависимостей через `npm ci`;
+2. установка браузеров Playwright;
+3. запуск E2E-тестов;
+4. сохранение HTML-отчёта Playwright как артефакта.
+
+## Структура проекта
+
+```text
+.
+├── src/                         # Исходный код React/Vite-приложения
+├── tests/
+│   ├── pages/                   # Page Object классы
+│   │   ├── LabelsPage.js
+│   │   ├── LoginPage.js
+│   │   ├── MainPage.js
+│   │   ├── TasksPage.js
+│   │   ├── TaskStatusesPage.js
+│   │   └── UsersPage.js
+│   ├── labels/                  # Тесты меток
+│   ├── task-statuses/           # Тесты статусов задач
+│   ├── tasks/                   # Тесты Канбан-доски
+│   ├── users/                   # Тесты пользователей
+│   ├── auth.spec.js             # Тесты авторизации
+│   └── rendering.spec.js        # Smoke-тест рендеринга приложения
+├── .github/workflows/           # GitHub Actions workflows
+├── playwright.config.js         # Конфигурация Playwright
+├── package.json
+└── README.md
+```
+
+## Автор
+
+Проект выполнен в рамках курса Hexlet по автотестированию на JavaScript.
 [Michael Emtsev](https://github.com/Michael57e)
 
 ### Hexlet tests and linter status:
+
 [![Actions Status](https://github.com/Michael57e/qa-auto-engineer-javascript-project-90/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Michael57e/qa-auto-engineer-javascript-project-90/actions)

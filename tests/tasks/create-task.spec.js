@@ -28,6 +28,4 @@ test('user can create a task', async ({ page }) => {
 
   const card = tasksPage.getCardByTitle(taskTitle);
   await expect(card).toBeVisible();
-
-//  await page.screenshot({ path: 'test-results/task-created.png', fullPage: true });
 });

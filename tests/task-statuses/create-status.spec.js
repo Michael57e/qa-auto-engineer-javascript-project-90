@@ -46,10 +46,4 @@ test('user can create a task status', async ({ page }) => {
   const row = taskStatusesPage.getRowByName(status.name);
   await expect(row).toBeVisible();
   await expect(row).toContainText(status.slug);
-
-  // Скриншот
-/*  await page.screenshot({ 
-    path: 'test-results/status-created.png', 
-    fullPage: true 
-  });*/
 });

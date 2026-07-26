@@ -12,7 +12,7 @@ test('user can delete a task', async ({ page }) => {
   await loginPage.login('login', 'password');
   await mainPage.expectMainPage();
 
-  // 1. Создаем задачу для последующего удаления
+  // Создаем задачу для последующего удаления
   await tasksPage.goto();
   await tasksPage.expectKanbanBoard();
   await tasksPage.clickCreate();
@@ -22,22 +22,20 @@ test('user can delete a task', async ({ page }) => {
   await tasksPage.saveButton.click();
   await expect(page.getByText('Element created')).toBeVisible();
 
-  // 2. Открываем созданную задачу на редактирование
+  // Открываем созданную задачу на редактирование
   await tasksPage.openList();
   await tasksPage.expectKanbanBoard();
   const card = tasksPage.getCardByTitle(taskTitle);
   await expect(card).toBeVisible();
   await card.getByRole('link', { name: 'Edit' }).click();
 
-  // 3. Удаляем задачу
+  // Удаляем задачу
   await expect(tasksPage.deleteButton).toBeVisible();
   await tasksPage.deleteButton.click();
   await expect(page.getByText('Element deleted')).toBeVisible();
 
-  // 4. Проверяем, что задачи больше нет на доске
+  // Проверяем, что задачи больше нет на доске
   await tasksPage.openList();
   await tasksPage.expectKanbanBoard();
   await expect(tasksPage.getCardByTitle(taskTitle)).toHaveCount(0);
-
-//  await page.screenshot({ path: 'test-results/task-deleted.png', fullPage: true });
 });

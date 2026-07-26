@@ -57,10 +57,4 @@ test('user can edit a task status', async ({ page }) => {
   const updatedRow = await taskStatusesPage.getRowByName(updatedStatus.name);
   await expect(updatedRow).toBeVisible();
   await expect(updatedRow).toContainText(updatedStatus.slug);
-
-  // Скриншот
-/*  await page.screenshot({ 
-    path: 'test-results/status-edited.png', 
-    fullPage: true 
-  });*/
 });

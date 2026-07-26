@@ -10,7 +10,7 @@ test('user can bulk delete users', async ({ page }) => {
 
   await loginPage.goto();
   
-  // Всегда выполняем вход
+  // Ввыполняем вход
   await loginPage.login('login', 'password');
   await mainPage.expectMainPage();
 
@@ -36,7 +36,4 @@ test('user can bulk delete users', async ({ page }) => {
 
   // Проверяем, что пользователей больше нет
   await expect(page.getByText('No Users yet.')).toBeVisible();
-  
-  // Скриншот для проверки результата
-//  await page.screenshot({ path: 'test-results/bulk-delete-result.png', fullPage: true });
 });

@@ -33,10 +33,4 @@ test('user can bulk delete task statuses', async ({ page }) => {
 
   // Проверяем, что список пуст
   await taskStatusesPage.expectEmptyList();
-
-  // Скриншот
-/*  await page.screenshot({ 
-    path: 'test-results/statuses-bulk-deleted.png', 
-    fullPage: true 
-  });*/
 });

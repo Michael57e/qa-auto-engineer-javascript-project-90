@@ -35,6 +35,4 @@ test('user can delete a label', async ({ page }) => {
 
   // Проверяем, что метка удалена
   await expect(labelsPage.getRowByName(labelName)).toHaveCount(0);
-
-//  await page.screenshot({ path: 'test-results/label-deleted.png', fullPage: true });
 });

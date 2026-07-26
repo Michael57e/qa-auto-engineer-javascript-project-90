@@ -26,6 +26,4 @@ test('user can bulk delete labels', async ({ page }) => {
 
   // Проверяем пустой список
   await labelsPage.expectEmptyList();
-
-//  await page.screenshot({ path: 'test-results/labels-bulk-deleted.png', fullPage: true });
 });

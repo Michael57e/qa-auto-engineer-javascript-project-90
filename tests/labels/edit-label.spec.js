@@ -38,6 +38,4 @@ test('user can edit a label', async ({ page }) => {
   // Проверяем обновленную метку в таблице
   const row = labelsPage.getRowByName(updatedName);
   await expect(row).toBeVisible();
-
-//  await page.screenshot({ path: 'test-results/label-edited.png', fullPage: true });
 });

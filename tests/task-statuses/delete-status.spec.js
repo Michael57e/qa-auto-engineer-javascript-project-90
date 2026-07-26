@@ -50,10 +50,4 @@ test('user can delete a task status', async ({ page }) => {
   await expect(
     taskStatusesPage.getRowByName(status.name)
   ).toHaveCount(0);
-
-  // Скриншот
-/*  await page.screenshot({ 
-    path: 'test-results/status-deleted.png', 
-    fullPage: true 
-  });*/
 });

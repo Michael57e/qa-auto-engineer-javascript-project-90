@@ -22,6 +22,4 @@ test('user can filter tasks', async ({ page }) => {
 
   // Проверяем, что доска обновилась и отображается
   await tasksPage.expectKanbanBoard();
-
-//  await page.screenshot({ path: 'test-results/tasks-filtered.png', fullPage: true });
 });

@@ -57,7 +57,4 @@ test('user can edit user information', async ({ page }) => {
   await expect(cells.nth(2)).toHaveText(updatedUser.email);
   await expect(cells.nth(3)).toHaveText(updatedUser.firstName);
   await expect(cells.nth(4)).toHaveText(updatedUser.lastName);
-
-  // Скриншот для визуальной проверки
-  await page.screenshot({ path: 'test-results/user-edited.png', fullPage: true });
 });

@@ -32,6 +32,4 @@ test('user can create a label', async ({ page }) => {
 
   const row = labelsPage.getRowByName(labelName);
   await expect(row).toBeVisible();
-
-//  await page.screenshot({ path: 'test-results/label-created.png', fullPage: true });
 });

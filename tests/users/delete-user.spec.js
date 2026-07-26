@@ -33,12 +33,6 @@ test('user can delete a user', async ({ page }) => {
   // Возвращаемся к списку пользователей
   await usersPage.openList();
 
-  // Скриншот для проверки (delete)
-/*  await page.screenshot({ 
-    path: 'test-results/delete-single-user1.png', 
-    fullPage: true 
-  });*/
-
   // Находим созданного пользователя
   const row = page.getByRole('row', {
     name: new RegExp(user.email),
@@ -66,10 +60,4 @@ test('user can delete a user', async ({ page }) => {
       name: new RegExp(user.email),
     })
   ).toHaveCount(0);
-
-  // Скриншот для проверки
-/*  await page.screenshot({ 
-    path: 'test-results/delete-single-user.png', 
-    fullPage: true 
-  });*/
 });

@@ -21,7 +21,7 @@ test('user can edit a task', async ({ page }) => {
 
   await firstCard.getByRole('link', { name: 'Edit' }).click();
 
-  // ВАЖНО для WebKit: ждем, пока форма подгрузит данные
+  // Ждем, пока форма подгрузит данные
   await expect(tasksPage.titleInput).toHaveValue(originalTitle);
 
   const updatedTitle = `Updated Task ${Date.now()}`;
@@ -35,6 +35,4 @@ test('user can edit a task', async ({ page }) => {
   await tasksPage.expectKanbanBoard();
 
   await expect(tasksPage.getCardByTitle(updatedTitle)).toBeVisible();
-
-//  await page.screenshot({ path: 'test-results/task-edited.png', fullPage: true });
 });

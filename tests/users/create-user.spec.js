@@ -8,27 +8,21 @@ test('user can create a new user', async ({ page }) => {
   const mainPage = new MainPage(page);
   const usersPage = new UsersPage(page);
 
-  // Шаг 1. Открываем страницу логина
+  // Открываем страницу логина
   await loginPage.goto();
 
-  // Шаг 2. Логинимся
+  // Логинимся
   await loginPage.login('login', 'password');
 
-  // Шаг 3. Проверяем главную страницу
+  // Проверяем главную страницу
   await mainPage.expectMainPage();
 
-  // Шаг 4. Переходим в Users
+  // Переходим в Users
   await usersPage.goto();
-
-  // Шаг 5. Проверяем наличие кнопки Create
-  console.log(
-    'Create visible:',
-    await usersPage.createButton.isVisible().catch(() => false)
-  );
 
   await usersPage.clickCreate();
 
-  // Шаг 6. Проверяем форму
+  // Проверяем форму
   await expect(usersPage.emailInput).toBeVisible();
   await expect(usersPage.firstNameInput).toBeVisible();
   await expect(usersPage.lastNameInput).toBeVisible();
@@ -46,12 +40,12 @@ test('user can create a new user', async ({ page }) => {
   await usersPage.firstNameInput.fill(user.firstName);
   await usersPage.lastNameInput.fill(user.lastName);
 
-  // Шаг 7. Сохраняем
+  // Сохраняем
   await usersPage.saveButton.click();
 
   await expect(page.getByText('Element created')).toBeVisible();
 
-  // Шаг 8. Возвращаемся к списку
+  // Возвращаемся к списку
   await usersPage.openList();
 
   const row = page.getByRole('row', {
@@ -60,5 +54,4 @@ test('user can create a new user', async ({ page }) => {
 
   await expect(row).toContainText(user.firstName);
   await expect(row).toContainText(user.lastName);
-
 });
