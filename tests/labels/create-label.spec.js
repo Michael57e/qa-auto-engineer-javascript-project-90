@@ -1,17 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { MainPage } from '../pages/MainPage';
-import { LabelsPage } from '../pages/LabelsPage';
+import { test, expect } from '../fixtures.js';
 
-test('user can create a label', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  const mainPage = new MainPage(page);
-  const labelsPage = new LabelsPage(page);
-
-  await loginPage.goto();
-  await loginPage.login('login', 'password');
-  await mainPage.expectMainPage();
-
+test('user can create a label', async ({ page, labelsPage }) => {
   await labelsPage.goto();
   await labelsPage.expectLabelsList();
 

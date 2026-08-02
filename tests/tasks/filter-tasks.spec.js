@@ -1,25 +1,12 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { MainPage } from '../pages/MainPage';
-import { TasksPage } from '../pages/TasksPage';
+import { test, expect } from '../fixtures.js';
 
-test('user can filter tasks', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  const mainPage = new MainPage(page);
-  const tasksPage = new TasksPage(page);
-
-  await loginPage.goto();
-  await loginPage.login('login', 'password');
-  await mainPage.expectMainPage();
-
+test('user can filter tasks', async ({ page, tasksPage }) => {
   await tasksPage.goto();
   await tasksPage.expectKanbanBoard();
 
-  // Открываем фильтр по Label и выбираем значение
   await tasksPage.labelFilter.click();
   const option = page.getByRole('option').first();
   await option.click();
 
-  // Проверяем, что доска обновилась и отображается
   await tasksPage.expectKanbanBoard();
 });

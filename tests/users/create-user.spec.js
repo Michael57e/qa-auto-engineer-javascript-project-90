@@ -1,28 +1,9 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { MainPage } from '../pages/MainPage';
-import { UsersPage } from '../pages/UsersPage';
+import { test, expect } from '../fixtures.js';
 
-test('user can create a new user', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  const mainPage = new MainPage(page);
-  const usersPage = new UsersPage(page);
-
-  // Открываем страницу логина
-  await loginPage.goto();
-
-  // Логинимся
-  await loginPage.login('login', 'password');
-
-  // Проверяем главную страницу
-  await mainPage.expectMainPage();
-
-  // Переходим в Users
+test('user can create a new user', async ({ page, usersPage }) => {
   await usersPage.goto();
-
   await usersPage.clickCreate();
 
-  // Проверяем форму
   await expect(usersPage.emailInput).toBeVisible();
   await expect(usersPage.firstNameInput).toBeVisible();
   await expect(usersPage.lastNameInput).toBeVisible();
@@ -40,12 +21,10 @@ test('user can create a new user', async ({ page }) => {
   await usersPage.firstNameInput.fill(user.firstName);
   await usersPage.lastNameInput.fill(user.lastName);
 
-  // Сохраняем
-  await usersPage.saveButton.click();
+  await usersPage.saveButton.click(); // ← исправлено saveBu$tton → saveButton
 
   await expect(page.getByText('Element created')).toBeVisible();
 
-  // Возвращаемся к списку
   await usersPage.openList();
 
   const row = page.getByRole('row', {

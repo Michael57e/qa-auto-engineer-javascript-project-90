@@ -1,23 +1,11 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { MainPage } from '../pages/MainPage';
-import { TasksPage } from '../pages/TasksPage';
+import { test, expect } from '../fixtures.js';
 
-test('user can create a task', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  const mainPage = new MainPage(page);
-  const tasksPage = new TasksPage(page);
-
-  await loginPage.goto();
-  await loginPage.login('login', 'password');
-  await mainPage.expectMainPage();
-
+test('user can create a task', async ({ page, tasksPage }) => {
   await tasksPage.goto();
   await tasksPage.expectKanbanBoard();
-
   await tasksPage.clickCreate();
 
-  const taskTitle = `Task ${Date.now()}`;
+  const taskTitle = `Task ${Date.now()}`; // ← исправлен шаблон
   await tasksPage.fillTaskForm(taskTitle);
 
   await tasksPage.saveButton.click();

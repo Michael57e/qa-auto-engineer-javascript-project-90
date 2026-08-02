@@ -1,19 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { MainPage } from '../pages/MainPage';
-import { UsersPage } from '../pages/UsersPage';
+import { test, expect } from '../fixtures.js';
 
-test('user can delete a user', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  const mainPage = new MainPage(page);
-  const usersPage = new UsersPage(page);
-
-  // Авторизация
-  await loginPage.goto();
-  await loginPage.login('login', 'password');
-  await mainPage.expectMainPage();
-
-  // Создаем пользователя для удаления
+test('user can delete a user', async ({ page, usersPage }) => {
   await usersPage.goto();
   await usersPage.clickCreate();
 
@@ -30,31 +17,24 @@ test('user can delete a user', async ({ page }) => {
 
   await expect(page.getByText('Element created')).toBeVisible();
 
-  // Возвращаемся к списку пользователей
   await usersPage.openList();
 
-  // Находим созданного пользователя
   const row = page.getByRole('row', {
     name: new RegExp(user.email),
   });
 
   await expect(row).toBeVisible({ timeout: 10000 });
 
-  // Выбираем пользователя
   await row.getByRole('checkbox').check();
 
-  // Проверяем, что пользователь выделен
   await expect(
     page.getByRole('heading', { name: '1 item selected' })
   ).toBeVisible();
 
-  // Удаляем
   await page.getByRole('button', { name: 'Delete' }).click();
 
-  // Проверяем уведомление
   await expect(page.getByText('Element deleted')).toBeVisible();
 
-  // Проверяем, что пользователя больше нет
   await expect(
     page.getByRole('row', {
       name: new RegExp(user.email),
