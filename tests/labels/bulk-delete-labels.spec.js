@@ -1,15 +1,15 @@
-import { test, expect } from '../fixtures.js';
+import { test } from '../fixtures.js';
 
-test('user can bulk delete labels', async ({ page, labelsPage }) => {
+test('user can bulk delete labels', async ({ labelsPage }) => {
   await labelsPage.goto();
   await labelsPage.expectLabelsList();
 
-  await labelsPage.selectAllCheckbox.check();
+  await labelsPage.selectAllLabels();
 
-  await expect(page.getByRole('heading', { name: /\d+ items selected/ })).toBeVisible();
+  await labelsPage.expectSelectedItemsCount(/\d+ items selected/);
 
-  await labelsPage.deleteButton.click();
-  await expect(page.getByText(/\d+ elements deleted/)).toBeVisible();
+  await labelsPage.deleteSelectedLabels();
+  await labelsPage.expectBulkDeletedNotification();
 
   await labelsPage.expectEmptyList();
 });

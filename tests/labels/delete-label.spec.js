@@ -1,23 +1,17 @@
-import { test, expect } from '../fixtures.js';
+import { test } from '../fixtures.js';
 
-test('user can delete a label', async ({ page, labelsPage }) => {
-  await labelsPage.goto();
-  await labelsPage.expectLabelsList();
-  await labelsPage.clickCreate();
+test('user can delete a label', async ({ labelsPage }) => {
+  const labelName = `label-del-${Date.now()}`;
 
-  const labelName = `label-del-${Date.now()}`; // ← исправлен шаблон
-  await labelsPage.nameInput.fill(labelName);
-  await labelsPage.saveButton.click();
-  await expect(page.getByText('Element created')).toBeVisible();
+  await labelsPage.createLabel(labelName);
 
   await labelsPage.openList();
-  await labelsPage.expectLabelsList();
   await labelsPage.selectRowByName(labelName);
 
-  await expect(page.getByRole('heading', { name: '1 item selected' })).toBeVisible();
+  await labelsPage.expectSelectedItemsCount('1 item selected');
 
-  await labelsPage.deleteButton.click();
-  await expect(page.getByText('Element deleted')).toBeVisible();
+  await labelsPage.deleteSelectedLabels();
+  await labelsPage.expectDeletedNotification();
 
-  await expect(labelsPage.getRowByName(labelName)).toHaveCount(0);
+  await labelsPage.expectLabelNotInList(labelName);
 });

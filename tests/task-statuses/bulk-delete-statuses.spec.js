@@ -1,18 +1,15 @@
-import { test, expect } from '../fixtures.js';
+import { test } from '../fixtures.js';
 
-test('user can bulk delete task statuses', async ({ page, taskStatusesPage }) => {
+test('user can bulk delete task statuses', async ({ taskStatusesPage }) => {
   await taskStatusesPage.goto();
   await taskStatusesPage.expectStatusesList();
 
-  await taskStatusesPage.selectAllCheckbox.check();
+  await taskStatusesPage.selectAllStatuses();
 
-  await expect(
-    page.getByRole('heading', { name: /\d+ items selected/ })
-  ).toBeVisible();
+  await taskStatusesPage.expectSelectedItemsCount(/\d+ items selected/);
 
-  await taskStatusesPage.deleteButton.click();
-
-  await expect(page.getByText(/\d+ elements deleted/)).toBeVisible();
+  await taskStatusesPage.deleteSelectedStatuses();
+  await taskStatusesPage.expectBulkDeletedNotification();
 
   await taskStatusesPage.expectEmptyList();
 });

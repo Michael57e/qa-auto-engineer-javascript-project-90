@@ -1,23 +1,19 @@
-import { test, expect } from '../fixtures.js';
+import { test } from '../fixtures.js';
 
-test('user can drag and drop a task card to another column', async ({ tasksPage, page }) => {
+test('user can drag and drop a task card to another column', async ({ tasksPage }) => {
+  const taskTitle = `Move Task ${Date.now()}`;
 
-  await tasksPage.goto();
-  await tasksPage.expectKanbanBoard();
+  await tasksPage.createTask({
+    title: taskTitle,
+    status: 'Draft',
+  });
 
-  const sourceColumn = page.locator('[data-rfd-droppable-id="1"]');
-  const targetColumn = page.locator('[data-rfd-droppable-id="2"]');
+  await tasksPage.openList();
 
-  const sourceCard = sourceColumn.locator('[data-rfd-draggable-id]').first();
-  await expect(sourceCard).toBeVisible();
+  await tasksPage.expectTaskInColumn(taskTitle, 'Draft');
 
-  const taskTitle = (await sourceCard.locator('.MuiTypography-h5').innerText()).trim();
+  await tasksPage.moveTaskToNextColumn(taskTitle);
 
-  await sourceCard.focus();
-  await page.keyboard.press('Space');
-  await page.keyboard.press('ArrowRight');
-  await page.keyboard.press('Space');
-
-  await expect(targetColumn.locator('.MuiCard-root', { hasText: taskTitle })).toBeVisible();
-  await expect(sourceColumn.locator('.MuiCard-root', { hasText: taskTitle })).toHaveCount(0);
+  await tasksPage.expectTaskInColumn(taskTitle, 'To Review');
+  await tasksPage.expectTaskNotInColumn(taskTitle, 'Draft');
 });

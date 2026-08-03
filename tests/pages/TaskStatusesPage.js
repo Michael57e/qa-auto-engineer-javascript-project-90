@@ -1,21 +1,18 @@
 import { expect } from '@playwright/test';
 
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export class TaskStatusesPage {
   constructor(page) {
     this.page = page;
     this.url = '#/task_statuses';
-    
-    // Кнопки и ссылки
+
     this.createButton = page.getByRole('link', { name: 'Create' });
-    this.exportButton = page.getByRole('button', { name: 'Export' });
     this.deleteButton = page.getByRole('button', { name: 'Delete' });
-    
-    // Таблица
+
     this.table = page.getByRole('table');
     this.selectAllCheckbox = page.getByRole('checkbox', { name: 'Select all' });
-    this.bulkActionsToolbar = page.locator('[data-test="bulk-actions-toolbar"]');
-    
-    // Форма создания/редактирования
+
     this.nameInput = page.getByLabel('Name *');
     this.slugInput = page.getByLabel('Slug *');
     this.saveButton = page.getByRole('button', { name: 'Save' });
@@ -23,27 +20,11 @@ export class TaskStatusesPage {
 
   async goto() {
     await this.page.goto(this.url);
-    // Ждем появления таблицы после перехода
-    await this.page.waitForSelector('table', { timeout: 10000 });
+    await expect(this.table).toBeVisible({ timeout: 10000 });
   }
 
-  async clickCreate() {
-    await this.createButton.click();
-  }
-
-  async openFirstStatus() {
-    await this.page.locator('tbody tr').first().click();
-  }
-
-  // Убираем async - метод должен возвращать Locator напрямую
-  getRowByName(name) {
-    return this.page.getByRole('row', { name: new RegExp(name) });
-  }
-
-  async selectRowByName(name) {
-    const row = this.getRowByName(name);
-    await row.getByRole('checkbox').check();
-    return row;
+  async openList() {
+    await this.goto();
   }
 
   async expectStatusesList() {
@@ -54,9 +35,103 @@ export class TaskStatusesPage {
     await expect(this.page.getByText('No Task statuses yet.')).toBeVisible();
   }
 
-  // Добавляем метод для возврата к списку после создания/редактирования
-  async openList() {
-    await this.page.goto(this.url);
-    await this.page.waitForSelector('table', { timeout: 10000 });
+  async clickCreate() {
+    await expect(this.createButton).toBeVisible();
+    await this.createButton.click();
+    await this.expectStatusFormVisible();
+  }
+
+  async expectStatusFormVisible() {
+    await expect(this.nameInput).toBeVisible();
+    await expect(this.slugInput).toBeVisible();
+    await expect(this.saveButton).toBeVisible();
+  }
+
+  async fillStatusForm(status) {
+    await this.nameInput.fill(status.name);
+    await this.slugInput.fill(status.slug);
+  }
+
+  async saveForm() {
+    await expect(this.saveButton).toBeVisible();
+    await expect(this.saveButton).toBeEnabled();
+    await this.saveButton.click();
+  }
+
+  async createStatus(status) {
+    await this.goto();
+    await this.clickCreate();
+    await this.fillStatusForm(status);
+    await this.saveForm();
+    await this.expectCreatedNotification();
+  }
+
+  async updateCurrentStatus(status) {
+    await this.expectStatusFormVisible();
+    await this.fillStatusForm(status);
+    await this.saveForm();
+    await this.expectUpdatedNotification();
+  }
+
+  async openFirstStatus() {
+    await this.page.locator('tbody tr').first().click();
+  }
+
+  getRowByName(name) {
+    return this.page.getByRole('row', {
+      name: new RegExp(escapeRegExp(name)),
+    });
+  }
+
+  async selectRowByName(name) {
+    const row = this.getRowByName(name);
+
+    await expect(row).toBeVisible({ timeout: 10000 });
+    await row.getByRole('checkbox').check();
+
+    return row;
+  }
+
+  async selectAllStatuses() {
+    await expect(this.selectAllCheckbox).toBeVisible({ timeout: 10000 });
+    await this.selectAllCheckbox.check();
+  }
+
+  async deleteSelectedStatuses() {
+    await expect(this.deleteButton).toBeVisible({ timeout: 10000 });
+    await this.deleteButton.click();
+  }
+
+  async expectSelectedItemsCount(countTextOrRegExp) {
+    await expect(
+      this.page.getByRole('heading', { name: countTextOrRegExp })
+    ).toBeVisible();
+  }
+
+  async expectCreatedNotification() {
+    await expect(this.page.getByText('Element created')).toBeVisible();
+  }
+
+  async expectUpdatedNotification() {
+    await expect(this.page.getByText('Element updated')).toBeVisible();
+  }
+
+  async expectDeletedNotification() {
+    await expect(this.page.getByText('Element deleted')).toBeVisible();
+  }
+
+  async expectBulkDeletedNotification() {
+    await expect(this.page.getByText(/\d+ elements deleted/)).toBeVisible();
+  }
+
+  async expectStatusInList(status) {
+    const row = this.getRowByName(status.name);
+
+    await expect(row).toBeVisible();
+    await expect(row).toContainText(status.slug);
+  }
+
+  async expectStatusNotInList(name) {
+    await expect(this.getRowByName(name)).toHaveCount(0);
   }
 }

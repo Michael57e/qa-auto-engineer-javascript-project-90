@@ -1,23 +1,18 @@
-import { test, expect } from '../fixtures.js';
+import { test } from '../fixtures.js';
 
-test('user can edit a label', async ({ page, labelsPage }) => {
-  await labelsPage.goto();
+test('user can edit a label', async ({ labelsPage }) => {
+  const originalName = `label-edit-${Date.now()}`;
+  const updatedName = `label-updated-${Date.now()}`;
+
+  await labelsPage.createLabel(originalName);
+
+  await labelsPage.openList();
+  await labelsPage.openLabelByName(originalName);
+
+  await labelsPage.updateCurrentLabel(updatedName);
+
+  await labelsPage.expectLabelsUrl();
   await labelsPage.expectLabelsList();
-
-  await labelsPage.openFirstLabel();
-
-  await expect(labelsPage.nameInput).toBeVisible();
-  await expect(labelsPage.saveButton).toBeVisible();
-
-  const updatedName = `label-${Date.now()}`;
-
-  await labelsPage.nameInput.fill(updatedName);
-  await labelsPage.saveButton.click();
-
-  await expect(page.getByText('Element updated')).toBeVisible();
-  await expect(page).toHaveURL(/#\/labels/);
-  await labelsPage.expectLabelsList();
-
-  const row = labelsPage.getRowByName(updatedName);
-  await expect(row).toBeVisible();
+  await labelsPage.expectLabelInList(updatedName);
+  await labelsPage.expectLabelNotInList(originalName);
 });

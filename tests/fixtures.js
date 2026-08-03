@@ -1,4 +1,5 @@
-import { test as base } from '@playwright/test';
+import { test as base, expect } from '@playwright/test';
+import { CREDENTIALS } from './testData.js';
 import { LoginPage } from './pages/LoginPage';
 import { MainPage } from './pages/MainPage';
 import { UsersPage } from './pages/UsersPage';
@@ -6,51 +7,38 @@ import { TaskStatusesPage } from './pages/TaskStatusesPage';
 import { LabelsPage } from './pages/LabelsPage';
 import { TasksPage } from './pages/TasksPage';
 
-// Тестовые данные и креденшелы
-export const CREDENTIALS = {
-  username: 'login',
-  password: 'password'
-};
-
-// Расширяем стандартный тест Playwright нашими фикстурами
 export const test = base.extend({
-  // Авторизованная страница. Создается один раз перед каждым тестом.
-  page: async ({ browser }, use) => {
+  loggedPage: async ({ browser }, use) => {
     const context = await browser.newContext();
     const page = await context.newPage();
 
     const loginPage = new LoginPage(page);
+    const mainPage = new MainPage(page);
+
     await loginPage.goto();
     await loginPage.login(CREDENTIALS.username, CREDENTIALS.password);
+    await mainPage.expectMainPage();
 
-    // Передаем уже авторизованную страницу в тест
     await use(page);
 
-    // Очистка после теста
     await context.close();
   },
 
-  // Готовые Page Objects, уже инициализированные авторизованной страницей
-  mainPage: async ({ page }, use) => {
-    await use(new MainPage(page));
+  usersPage: async ({ loggedPage }, use) => {
+    await use(new UsersPage(loggedPage));
   },
 
-  usersPage: async ({ page }, use) => {
-    await use(new UsersPage(page));
+  labelsPage: async ({ loggedPage }, use) => {
+    await use(new LabelsPage(loggedPage));
   },
 
-  taskStatusesPage: async ({ page }, use) => {
-    await use(new TaskStatusesPage(page));
+  taskStatusesPage: async ({ loggedPage }, use) => {
+    await use(new TaskStatusesPage(loggedPage));
   },
 
-  labelsPage: async ({ page }, use) => {
-    await use(new LabelsPage(page));
-  },
-
-  tasksPage: async ({ page }, use) => {
-    await use(new TasksPage(page));
+  tasksPage: async ({ loggedPage }, use) => {
+    await use(new TasksPage(loggedPage));
   },
 });
 
-// Реэкспортируем стандартный expect чтобы не импортировать его отдельно
-export { expect } from '@playwright/test';
+export { expect };
